@@ -1,7 +1,28 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import { Text, View, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 
+import { AuthContext } from '../../contexts/AuthContext';
+
 export default function SignIn() {
+
+    const { user, isAuthenticated, signIn } = useContext(AuthContext);
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
+    async function handleLogin() {
+        setError('');
+
+        if (email === '' || password === '') {
+            setError('Email o contraseña incorrecto(s)')
+            return;
+        }
+
+        await signIn({ email, password })
+        console.log('user is: ', user)
+    }
+
     return (
         <View style={styles.container}>
             <Image style={styles.logo} source={require('../../assets/logo_ok.png')}></Image>
@@ -11,15 +32,21 @@ export default function SignIn() {
                     placeholder='E-mail'
                     style={styles.input}
                     placeholderTextColor={'#F0F0F0'}
+                    value={email}
+                    onChangeText={setEmail}
                 />
                 <TextInput
                     placeholder='Password'
                     style={styles.input}
                     secureTextEntry={true}
                     placeholderTextColor={'#F0F0F0'}
+                    value={password}
+                    onChangeText={setPassword}
                 />
 
-                <TouchableOpacity style={styles.button}>
+                <Text style={{ color: '#F00', marginBottom: 12 }}>{error}</Text>
+
+                <TouchableOpacity style={styles.button} onPress={handleLogin}>
                     <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
             </View>
@@ -36,6 +63,9 @@ const styles = StyleSheet.create({
     },
     logo: {
         marginBottom: 18,
+        width: 300,
+        height: 125,
+        objectFit: 'contain'
     },
     loginForm: {
         width: '95%',
